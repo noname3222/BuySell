@@ -5,6 +5,8 @@ import com.example.BuySell.models.Product;
 import com.example.BuySell.models.User;
 import com.example.BuySell.repositories.ProductRepository;
 import com.example.BuySell.repositories.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -21,9 +22,17 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
 
-    public List<Product> getProducts(String title) {
-        if (title != null) return productRepository.findByTitle(title);
-        return productRepository.findAll();
+    public Page<Product> getProducts(String title, String city, Pageable pageable) {
+        if (title != null && !title.isBlank() && city != null && !city.isBlank()) {
+            return productRepository.findByTitleContainingIgnoreCaseAndCity(title, city, pageable);
+        }
+        if (title != null && !title.isBlank()) {
+            return productRepository.findByTitleContainingIgnoreCase(title, pageable);
+        }
+        if (city != null && !city.isBlank()) {
+            return productRepository.findByCity(city, pageable);
+        }
+        return productRepository.findAll(pageable);
     }
 
     public void saveProduct(Principal principal, Product product, MultipartFile file1, MultipartFile file2, MultipartFile file3) throws IOException {

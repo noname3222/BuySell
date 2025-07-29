@@ -4,6 +4,8 @@ import com.example.BuySell.models.Product;
 import com.example.BuySell.models.User;
 import com.example.BuySell.services.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,10 +23,15 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/")
-    public String products(@RequestParam(name = "searchWord", required = false) String title, Principal principal, Model model) {
-        model.addAttribute("products", productService.getProducts(title));
+    public String products(@RequestParam(name = "searchWord", required = false) String title,
+                           @RequestParam(name = "city", required = false) String city,
+                           @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+                           Principal principal, Model model) {
+        Page<Product> products = productService.getProducts(title, city, PageRequest.of(page, 6));
+        model.addAttribute("products", products);
         model.addAttribute("user", productService.getUserByPrincipal(principal));
         model.addAttribute("searchWord", title);
+        model.addAttribute("searchCity", city);
         return "products";
     }
 

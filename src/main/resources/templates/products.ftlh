@@ -5,11 +5,11 @@
         <div class="form-row">
             <div class="form-group col-md-2">
                 <label for="searchCity">Город</label>
-                <select id="searchCity" class="form-control">
-                    <option value="">Город не выбран</option>
-                    <option value="Москва">Москва</option>
-                    <option value="Красноярск">Самара</option>
-                    <option value="Казань">Казань</option>
+                <select id="searchCity" name="city" class="form-control">
+                    <option value="" <#if !searchCity?? || searchCity == "">selected</#if>>Город не выбран</option>
+                    <option value="Москва" <#if searchCity?? && searchCity=="Москва">selected</#if>>Москва</option>
+                    <option value="Красноярск" <#if searchCity?? && searchCity=="Красноярск">selected</#if>>Самара</option>
+                    <option value="Казань" <#if searchCity?? && searchCity=="Казань">selected</#if>>Казань</option>
                 </select>
             </div>
             <div class="form-group col-md-10">
@@ -22,7 +22,7 @@
     </form>
     <hr>
     <div class="card-columns">
-        <#list products as product>
+        <#list products.content as product>
             <a href="/product/${product.id}" class="product-link">
                 <div class="card text-white bg-dark my-3 product">
                     <img src="/images/${product.previewImageId}"
@@ -40,4 +40,20 @@
             <h1 style="text-align: center">Не найдено</h1>
         </#list>
     </div>
+
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item <#if products.first>disabled</#if>">
+                <a class="page-link" href="?page=${products.number-1}&searchWord=${searchWord!}&city=${searchCity!}">Previous</a>
+            </li>
+            <#list 0..products.totalPages-1 as i>
+                <li class="page-item <#if i==products.number>active</#if>">
+                    <a class="page-link" href="?page=${i}&searchWord=${searchWord!}&city=${searchCity!}">${i+1}</a>
+                </li>
+            </#list>
+            <li class="page-item <#if products.last>disabled</#if>">
+                <a class="page-link" href="?page=${products.number+1}&searchWord=${searchWord!}&city=${searchCity!}">Next</a>
+            </li>
+        </ul>
+    </nav>
 </@t.template>
